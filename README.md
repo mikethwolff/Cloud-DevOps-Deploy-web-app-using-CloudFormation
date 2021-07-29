@@ -20,7 +20,7 @@ Read on: [Deploy Static Website on AWS](https://github.com/MichaelThomasWolff/Se
 
 ## Project 2: Deploy a high-availability web app using CloudFormation (IAC)
 
-Creating this project will give you the hands-on experience you need to confidently talk about infrastructure as code.
+In this project, you'll be faced with a real scenario. Creating this project will give you the hands-on experience you need to confidently talk about infrastructure as code.
 
 There will be two parts to this project:
 
