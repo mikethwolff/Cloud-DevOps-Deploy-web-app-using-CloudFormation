@@ -299,20 +299,180 @@ network-parameters.json
 
 ```
 
-servers-parameters.json
-```
-```
-
 servers.yml
 ```
+Description: 
+            Udacity DevOps Project
+            This template deploys SERVER resources for the Udacity high-available-website-project
+Parameters:
+  EnvironmentName:
+    Description: An Environment name that will be prefixed to resources
+    Type: String
+  MinAutoScalingSize:
+    Description: The minimum size for the auto scaling group
+    Type: String
+  MaxAutoScalingSize:
+    Description: The maximum size for the auto scaling group
+    Type: String
+
+Resources:
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to the loadbalancer
+      VpcId:
+        Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to our webApp Hosts and ssh only from local
+      VpcId:
+        Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+  WebAppLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt-get update
+          apt-get install apache2 -y
+          mv /var/www/html/index.html /var/www/html/index_old.html
+          wget -P /var/www/html https://udacity-cloudformation-bucket.s3-us-west-2.amazonaws.com/index.html
+          systemctl start apache2.service
+      ImageId: ami-005bdb005fb00e791
+      SecurityGroups:
+        - Ref: WebServerSecurityGroup
+      InstanceType: t3.small
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdk"
+          Ebs:
+            VolumeSize: "10"
+  WebAppGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - Fn::ImportValue: !Sub "${EnvironmentName}-PRIV-NETS"
+      MinSize: !Ref MinAutoScalingSize
+      MaxSize: !Ref MaxAutoScalingSize
+      LaunchConfigurationName:
+        Ref: WebAppLaunchConfig
+      TargetGroupARNs:
+        - Ref: WebAppTargetGroup
+  WebApploadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+        - Fn::ImportValue: !Sub "${EnvironmentName}-PUB1-SN"
+        - Fn::ImportValue: !Sub "${EnvironmentName}-PUB2-SN"
+      SecurityGroups:
+        - Ref: LoadBalancerSecurityGroup
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn:
+            Ref: WebAppTargetGroup
+      LoadBalancerArn:
+        Ref: WebApploadBalancer
+      Port: "80"
+      Protocol: HTTP
+  ALBListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn:
+            Ref: WebAppTargetGroup
+      Conditions:
+        - Field: path-pattern
+          Values: [/]
+      ListenerArn:
+        Ref: Listener
+      Priority: 1
+  WebAppTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 5
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 4
+      HealthyThresholdCount: 3
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 3
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: "${EnvironmentName}-VPCID"
+Outputs:
+  LoadBanlancerEndpoint:
+    Description: this is the endpoint to use for accessing the loadbanlancer
+    Value: !Join ["", ["http://", !GetAtt WebApploadBalancer.DNSName]]
+    Export:
+      Name: !Sub ${EnvironmentName}-LBURL
+```
+
+
+servers-parameters.json
+```
+[
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "UdacityDevOpsProject"
+  },
+  {
+    "ParameterKey": "MinAutoScalingSize",
+    "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "MaxAutoScalingSize",
+    "ParameterValue": "4"
+  }
+]
 ```
 
 create.sh
 ```
+aws cloudformation create-stack \
+    --stack-name $1 \
+    --template-body file://$2 \
+    --parameters file://$3 \
+    --capabilities "CAPABILITY_IAM" \
+    --region=us-west-2
 ```
 
 update.sh
 ```
+aws cloudformation update-stack \
+    --stack-name $1 \
+    --template-body file://$2 \  
+    --parameters file://$3 \
+    --capabilities "CAPABILITY_IAM" \ 
+    --region=us-west-2
 ```
 
 
