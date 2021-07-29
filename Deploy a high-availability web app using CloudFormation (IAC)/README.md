@@ -8,7 +8,7 @@ This needs to be done in an automated fashion so that the infrastructure can be 
 
 Solution:
 
-[[https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/blob/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC)/UdacityDevOpsProject.png|alt=Lucychart]]
+![alt text](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/blob/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC)/UdacityDevOpsProject.png)
 
 
 Run commands:
