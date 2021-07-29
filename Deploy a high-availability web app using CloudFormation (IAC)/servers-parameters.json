@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "UdacityDevOpsProject"
+  },
+  {
+    "ParameterKey": "MinAutoScalingSize",
+    "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "MaxAutoScalingSize",
+    "ParameterValue": "4"
+  }
+]
