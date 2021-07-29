@@ -16,7 +16,7 @@ Topics Covered:
 * Website distribution via CloudFront
 * Access website via web browser
 
-Read on: [Deploy Static Website on AWS](https://github.com/MichaelThomasWolff/Security-Analyst-Projects-Udacity/tree/main/Planning%20for%20Security%20Controls)
+Read on: [Deploy Static Website on AWS](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20Static%20Website%20on%20AWS)
 
 ## Project 2: Deploy a high-availability web app using CloudFormation (IAC)
 
@@ -27,6 +27,6 @@ There will be two parts to this project:
 * Diagram: You'll first develop a diagram that you can present as part of your portfolio and as a visual aid to understand the CloudFormation script.
 * Script (Template and Parameters): The second part is to interpret the instructions and create a matching CloudFormation script.
 
-Read on: [Deploy a high-availability web app using CloudFormation](https://github.com/MichaelThomasWolff/Security-Analyst-Projects-Udacity/tree/main/Planning%20for%20Security%20Controls)
+Read on: [Deploy a high-availability web app using CloudFormation](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC))
 
 
