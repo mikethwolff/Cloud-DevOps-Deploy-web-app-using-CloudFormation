@@ -1,7 +1,7 @@
 # Deploy a high-availability web app using CloudFormation 
 ## (Infrastructure as code)
 
-**Scenario**
+**Scenario:**
 
 Your company is creating an Instagram clone called Udagram. Developers pushed the latest version of their code in a zip file located in a public S3 Bucket.
 
