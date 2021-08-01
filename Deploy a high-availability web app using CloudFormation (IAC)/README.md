@@ -327,6 +327,50 @@ Parameters:
     Type: String
 
 Resources:
+
+#-- allowing EC2 access to S3
+  UdacityS3ReadOnlyEC2:
+      Type: AWS::IAM::Role
+      Properties:
+          RoleName: 
+              !Sub ${EnvironmentName}-Role
+          AssumeRolePolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+              -   Effect: Allow
+                  Principal:
+                      Service:
+                      - ec2.amazonaws.com
+                  Action:
+                  - sts:AssumeRole
+          Path: "/"
+
+  RolePolicies:
+      Type: AWS::IAM::Policy
+      Properties:
+          PolicyName: AmazonS3ReadOnlyAccess
+          PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+              - 
+                  Effect: Allow
+                  Action: 
+                  -   s3:Get*
+                  -   s3:List*
+                  Resource: 
+                  -   arn:aws:s3:::udacitymwdevopsbucket
+                  -   arn:aws:s3:::udacitymwdevopsbucket/*
+          Roles:
+          -   Ref: UdacityS3ReadOnlyEC2
+
+  ProfileWithRolesForOurApp:
+      Type: AWS::IAM::InstanceProfile
+      Properties:
+          Path: "/"
+          Roles:
+          - Ref: UdacityS3ReadOnlyEC2
+
+#-- Security groups
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -343,6 +387,7 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -363,25 +408,32 @@ Resources:
           FromPort: 0
           ToPort: 65535
           CidrIp: 0.0.0.0/0
+
+#-- Launch configuration & auto scaling 
   WebAppLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       UserData:
         Fn::Base64: !Sub |
-          #!/bin/bash
-          apt-get update
-          apt-get install apache2 -y
-          mv /var/www/html/index.html /var/www/html/index_old.html
-          wget -P /var/www/html https://udacity-cloudformation-bucket.s3-us-west-2.amazonaws.com/index.html
-          systemctl start apache2.service
-      ImageId: ami-005bdb005fb00e791
+            #!/bin/bash
+            apt-get update -y
+            apt-get install unzip awscli -y
+            apt-get install apache2 -y
+            systemctl start apache2.service
+            cd /var/www/html
+            aws s3 cp s3://udacitymwdevopsbucket/udacity.zip .
+            unzip -o udacity.zip
+      ImageId: ami-0ac73f33a1888c64a
+      #-ImageId: ami-03d5c68bab01f3496
+      KeyName: DevOpsKey
       SecurityGroups:
         - Ref: WebServerSecurityGroup
-      InstanceType: t3.small
+      IamInstanceProfile: !Ref ProfileWithRolesForOurApp
+      InstanceType: t3.medium
       BlockDeviceMappings:
         - DeviceName: "/dev/sdk"
           Ebs:
-            VolumeSize: "10"
+            VolumeSize: '10'
   WebAppGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -393,6 +445,8 @@ Resources:
         Ref: WebAppLaunchConfig
       TargetGroupARNs:
         - Ref: WebAppTargetGroup
+
+#-- Load balancer 
   WebApploadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -410,7 +464,7 @@ Resources:
             Ref: WebAppTargetGroup
       LoadBalancerArn:
         Ref: WebApploadBalancer
-      Port: "80"
+      Port: 80
       Protocol: HTTP
   ALBListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
@@ -425,26 +479,32 @@ Resources:
       ListenerArn:
         Ref: Listener
       Priority: 1
+
+#-- Target group
   WebAppTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 5
+      HealthCheckIntervalSeconds: 10
       HealthCheckPath: /
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 4
-      HealthyThresholdCount: 3
+      HealthCheckTimeoutSeconds: 8
+      HealthyThresholdCount: 2
       Port: 80
       Protocol: HTTP
-      UnhealthyThresholdCount: 3
+      UnhealthyThresholdCount: 5
       VpcId:
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-VPCID"
+
+#-- Link
 Outputs:
   LoadBanlancerEndpoint:
     Description: this is the endpoint to use for accessing the loadbanlancer
     Value: !Join ["", ["http://", !GetAtt WebApploadBalancer.DNSName]]
     Export:
-      Name: !Sub ${EnvironmentName}-LBURL
+      #Name: !Sub ${EnvironmentName}-LBURL
+      Name: !Sub ${EnvironmentName}-DNS-NAME
+
 ```
 
 
