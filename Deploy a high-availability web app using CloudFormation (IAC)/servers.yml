@@ -15,29 +15,46 @@ Parameters:
 Resources:
 
 #-- allowing EC2 access to S3
-  EC2toS3:
-    Type: AWS::IAM::Role
-    Properties:
-      ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          -
-            Effect: "Allow"
-            Principal:
-              Service:
-                - "ec2.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Path: "/"
+  UdacityS3ReadOnlyEC2:
+      Type: AWS::IAM::Role
+      Properties:
+          RoleName: 
+              !Sub ${EnvironmentName}-Role
+          AssumeRolePolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+              -   Effect: Allow
+                  Principal:
+                      Service:
+                      - ec2.amazonaws.com
+                  Action:
+                  - sts:AssumeRole
+          Path: "/"
 
-  EC2InstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: "/"
-      Roles:
-        - !Ref EC2toS3
+  RolePolicies:
+      Type: AWS::IAM::Policy
+      Properties:
+          PolicyName: AmazonS3ReadOnlyAccess
+          PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+              - 
+                  Effect: Allow
+                  Action: 
+                  -   s3:Get*
+                  -   s3:List*
+                  Resource: 
+                  -   arn:aws:s3:::udacitymwdevopsbucket
+                  -   arn:aws:s3:::udacitymwdevopsbucket/*
+          Roles:
+          -   Ref: UdacityS3ReadOnlyEC2
+
+  ProfileWithRolesForOurApp:
+      Type: AWS::IAM::InstanceProfile
+      Properties:
+          Path: "/"
+          Roles:
+          - Ref: UdacityS3ReadOnlyEC2
 
 #-- Security groups
   LoadBalancerSecurityGroup:
@@ -84,18 +101,20 @@ Resources:
     Properties:
       UserData:
         Fn::Base64: !Sub |
-          apt-get update -y
-          apt-get install awscli -y
-          apt-get install apache2 -y
-          cd /var/www/html
-          aws s3 cp s3://udacitymwdevopsbucket/index.html .
-          systemctl start apache2.service
+            #!/bin/bash
+            apt-get update -y
+            apt-get install unzip awscli -y
+            apt-get install apache2 -y
+            systemctl start apache2.service
+            cd /var/www/html
+            aws s3 cp s3://udacitymwdevopsbucket/udacity.zip .
+            unzip -o udacity.zip
       ImageId: ami-0ac73f33a1888c64a
       #-ImageId: ami-03d5c68bab01f3496
       KeyName: DevOpsKey
       SecurityGroups:
         - Ref: WebServerSecurityGroup
-      IamInstanceProfile: !Ref EC2InstanceProfile
+      IamInstanceProfile: !Ref ProfileWithRolesForOurApp
       InstanceType: t3.medium
       BlockDeviceMappings:
         - DeviceName: "/dev/sdk"
