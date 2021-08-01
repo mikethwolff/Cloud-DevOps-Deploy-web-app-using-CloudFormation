@@ -16,8 +16,4 @@ For security reasons, the AWS access key ID, AWS secret access key and AWS sessi
 
 **Solution:**
 
-![alt text](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/blob/main/Deploy%20Static%20Website%20on%20AWS/file-upload.jpg)
-
-![alt text](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/blob/main/Deploy%20Static%20Website%20on%20AWS/policy.jpg)
-
 ![alt text](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/blob/main/Deploy%20Static%20Website%20on%20AWS/website-02.jpg)
