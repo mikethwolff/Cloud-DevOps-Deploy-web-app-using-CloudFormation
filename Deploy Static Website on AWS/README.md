@@ -12,6 +12,8 @@ You will configure the bucket for website hosting and secure it using IAM polici
 You will speed up content delivery using AWS’s content distribution network service, CloudFront.
 You will access your website in a browser using the unique CloudFront endpoint.
 
+For security reasons, the AWS access key ID, AWS secret access key and AWS session token are generated for each session, this page is not accessible to the public anymore. 
+
 **Solution:**
 
 ![alt text](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/blob/main/Deploy%20Static%20Website%20on%20AWS/file-upload.jpg)
