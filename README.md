@@ -1,4 +1,4 @@
-# Cloud-DevOps-Engineer-Projects-Udacity
+# Cloud DevOps Engineer Projects Udacity
 
 The listed projects were part of my Cloud DevOps Engineer Nanodegree and are displayed in derivated form due to copyright restrictions.
 
