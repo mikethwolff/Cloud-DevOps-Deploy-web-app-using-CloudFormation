@@ -14,9 +14,6 @@ There will be two parts to this project:
 * Diagram: You'll first develop a [diagram](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC)) that you can present as part of your portfolio and as a visual aid to understand the CloudFormation script.
 * [Script](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC)) (Template and Parameters): The second part is to interpret the instructions and create a matching CloudFormation script.
 
-## Project 2 Solution:
-## (Infrastructure as code)
-
 **Scenario:**
 
 Your company is creating an Instagram clone called Udagram. Developers pushed the latest version of their code in a zip file located in a public S3 Bucket.
@@ -33,7 +30,8 @@ You'll need to create a Launch Configuration for your application servers in ord
 You'll need two vCPUs and at least 4GB of RAM. The Operating System to be used is Ubuntu 18. So, choose an Instance size and Machine Image (AMI) that best fits this spec.
 Be sure to allocate at least 10GB of disk space so that you don't run into issues.
 
-**Solution:**
+## Project 2 Solution:
+## Infrastructure as code
 
 ![alt text](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/blob/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC)/UdacityDevOpsProject.png)
 
