@@ -14,8 +14,6 @@ There will be two parts to this project:
 * Diagram: You'll first develop a [diagram](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC)) that you can present as part of your portfolio and as a visual aid to understand the CloudFormation script.
 * [Script](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC)) (Template and Parameters): The second part is to interpret the instructions and create a matching CloudFormation script.
 
-**Solution:** [Deploy a high-availability web app using CloudFormation](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC))
-
 ## Project 2 Solution:
 ## (Infrastructure as code)
 
@@ -575,6 +573,8 @@ Update commands:
 ./update.sh [stackName1] network.yml network-parameters.json
 ./update.sh [stackName2] servers.yml servers-parameters.json
 ```
+
+**Link to project 2 solution:** [Deploy a high-availability web app using CloudFormation](https://github.com/mikethwolff/Cloud-DevOps-Engineer-Projects-Udacity/tree/main/Deploy%20a%20high-availability%20web%20app%20using%20CloudFormation%20(IAC))
 
 ## Project 1: Deploy Static Website on AWS
 
